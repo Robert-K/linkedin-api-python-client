@@ -1,7 +1,11 @@
 """
 Example calls to create a post on LinkedIn. This requires a member-based token with the following
-scopes (r_liteprofile, w_member_social), which is provided by the Sign in with LinkedIn and Share on LinkedIn
-API products.
+scopes:
+- openid
+- profile
+- w_member_social
+- email
+These are provided by the "Share on LinkedIn" and "Sign In with LinkedIn using OpenID Connect" LinkedIn API Products.
 
 The steps include:
 1. Fetching the authenticated member's profile to obtain the member's identifier (a person URN)
@@ -28,7 +32,7 @@ if ACCESS_TOKEN is None:
         'A valid access token must be defined in the /examples/.env file under the variable name "ACCESS_TOKEN"'
     )
 
-ME_RESOURCE = "/me"
+ME_RESOURCE = "/userinfo"
 UGC_POSTS_RESOURCE = "/ugcPosts"
 POSTS_RESOURCE = "/posts"
 API_VERSION = "202302"
@@ -49,7 +53,7 @@ Calling the legacy /ugcPosts API to create a text post on behalf of the authenti
 ugc_posts_create_response = restli_client.create(
     resource_path=UGC_POSTS_RESOURCE,
     entity={
-        "author": f"urn:li:person:{me_response.entity['id']}",
+        "author": f"urn:li:person:{me_response.entity['sub']}",
         "lifecycleState": "PUBLISHED",
         "specificContent": {
             "com.linkedin.ugc.ShareContent": {
@@ -75,7 +79,7 @@ of the authenticated member
 posts_create_response = restli_client.create(
     resource_path=POSTS_RESOURCE,
     entity={
-        "author": f"urn:li:person:{me_response.entity['id']}",
+        "author": f"urn:li:person:{me_response.entity['sub']}",
         "lifecycleState": "PUBLISHED",
         "visibility": "PUBLIC",
         "commentary": "Sample text post created with /posts API",
